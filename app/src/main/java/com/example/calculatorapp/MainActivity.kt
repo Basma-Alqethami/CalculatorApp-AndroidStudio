@@ -26,13 +26,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var add: Button
     private lateinit var subtract: Button
     private lateinit var clear: Button
-    private lateinit var result: Button
+    private lateinit var equals: Button
     private lateinit var del: Button
 
-    private var output = 0f
+    private var result = 0f
+    private var fNum = ""
+    private var sNum = ""
     private var operator = ' '
-    private var num1 = ""
-    private var num2 = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         subtract = findViewById(R.id.Sub)
         multiply = findViewById(R.id.Mult)
         divide = findViewById(R.id.Div)
-        result = findViewById(R.id.Equals)
+        equals = findViewById(R.id.Equals)
 
         decimal = findViewById(R.id.Decimal)
         plusMinus = findViewById(R.id.Negative)
@@ -82,94 +83,96 @@ class MainActivity : AppCompatActivity() {
         nine.setOnClickListener { setNum('9') }
 
 
-        add.setOnClickListener { handleOperator('+') }
-        subtract.setOnClickListener { handleOperator('-') }
-        multiply.setOnClickListener { handleOperator('*') }
-        divide.setOnClickListener { handleOperator('/') }
-        result.setOnClickListener { calculate() }
+        add.setOnClickListener { addOperator('+') }
+        subtract.setOnClickListener { addOperator('-') }
+        multiply.setOnClickListener { addOperator('*') }
+        divide.setOnClickListener { addOperator('/') }
+        equals.setOnClickListener { calculate() }
 
         decimal.setOnClickListener {
-            if(operator==' '&&!num1.contains(".")){setNum('.')}
+            if(operator==' '&&!fNum.contains(".")){setNum('.')}
             else {setNum('.')}
         }
 
         plusMinus.setOnClickListener { NegativeFun() }
 
-        clear.setOnClickListener { clearAll() }
-        del.setOnClickListener { deleteLast() }
+        clear.setOnClickListener { clear() }
+        del.setOnClickListener { delete() }
     }
 
     private fun NegativeFun (){
         if(operator==' '){
-            num1 = if(num1.startsWith("-")){
-                num1.substring(1, num1.length)
+            fNum = if(fNum.startsWith("-")){
+                fNum.substring(1, fNum.length)
             } else{
-                "-$num1"
+                "-$fNum"
             }
-            display.text = num1
+            display.text = fNum
+
         }else{
-            num2 = if(num2.startsWith("-")){
-                num2.substring(1, num2.length)
+            sNum = if(sNum.startsWith("-")){
+                sNum.substring(1, sNum.length)
             } else{
-                "-$num2"
+                "-$sNum"
             }
-            val text = num1 + operator + num2
+            val text = fNum + operator + sNum
             display.text = text
         }
     }
 
     private fun setNum(num: Char){
         if(operator==' '){
-            num1 += num
-            display.text = num1
+            fNum += num
+            display.text = fNum
         }else{
-            num2 += num
-            val text = num1 + operator + num2
+            sNum += num
+            val text = fNum + operator + sNum
             display.text = text
         }
     }
 
-    private fun handleOperator(op: Char){
+    private fun addOperator(op: Char){
         operator = op
-        val text = num1 + operator
+        val text = fNum + operator
         display.text = text
     }
 
     private fun calculate(){
         when (operator) {
-            '+' -> output = num1.toFloat() + num2.toFloat()
-            '-' -> output = num1.toFloat() - num2.toFloat()
-            '*' -> output = num1.toFloat() * num2.toFloat()
-            '/' -> if(num1.toFloat()!=0f&&num2.toFloat()!=0f){output = num1.toFloat() / num2.toFloat()}
+            '+' -> result = fNum.toFloat() + sNum.toFloat()
+            '-' -> result = fNum.toFloat() - sNum.toFloat()
+            '*' -> result = fNum.toFloat() * sNum.toFloat()
+            '/' -> if (fNum.toFloat() != 0f && sNum.toFloat() != 0f) {
+                       result = fNum.toFloat() / sNum.toFloat() }
         }
-        num1 = output.toString()
-        num2 = ""
-        display.text = output.toString()
+        fNum = result.toString()
+        sNum = ""
+        display.text = result.toString()
     }
 
-    private fun clearAll(){
-        output = 0f
+    private fun clear(){
+        result = 0f
         operator = ' '
-        num1 = ""
-        num2 = ""
+        fNum = ""
+        sNum = ""
         display.text = "0"
     }
 
-    private fun deleteLast(){
+    private fun delete(){
         if(operator==' '){
-            if(num1.isNotEmpty()){
-                num1 = num1.substring(0, num1.length - 1)
-                if(num1.isEmpty()){display.text = "0"}
-                else{display.text = num1}
+            if(fNum.isNotEmpty()){
+                fNum = fNum.substring(0, fNum.length - 1)
+                if(fNum.isEmpty()){display.text = "0"}
+                else{display.text = fNum}
             }
         }else{
-            if(num2.isNotEmpty()){
-                num2 = num2.substring(0, num2.length - 1)
-                val text = num1 + operator + num2
+            if(sNum.isNotEmpty()){
+                sNum = sNum.substring(0, sNum.length - 1)
+                val text = fNum + operator + sNum
                 display.text = text
             }else{
                 operator=' '
-                display.text = num1
+                display.text = fNum
             }
         }
     }
